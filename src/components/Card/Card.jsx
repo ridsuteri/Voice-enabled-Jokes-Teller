@@ -1,7 +1,26 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { css } from "emotion"
+import axios from "axios"
+import oval from "../../images/oval.svg"
 
 const Card = () => {
+  const [loading, setLoading] = useState(true)
+  const [joke, setJoke] = useState("")
+  const [fetch, setFetch] = useState(false)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      const result = await axios(
+        "https://icanhazdadjoke.com/slack"
+      )
+      console.log(result)
+      setJoke(`${result.data.attachments[0].text}`)
+      setLoading(false)
+    }
+    fetchData()
+  }, [fetch])
+
   return (
     <div
       className={css`
@@ -36,8 +55,18 @@ const Card = () => {
         }
       `}
     >
-      <h1>Jokes go hereee</h1>
-      <p onClick={() => console.log("You Clicked Me!")}>Another One!</p>
+      {loading ? (
+        <img
+          className={css`
+            margin: 40px;
+          `}
+          src={oval}
+          alt="loader"
+        />
+      ) : (
+        <h1>{joke}</h1>
+      )}
+      <p onClick={() => setFetch(!fetch)}>Another One!</p>
     </div>
   )
 }
